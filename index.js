@@ -198,13 +198,49 @@ Weixin.prototype.parseEventMsg = function() {
 	if (this.data.EventKey) {
 		eventKey = this.data.EventKey[0];
 	}
+
+	var status = '';
+	if (this.data.Status) {
+		status = this.data.Status[0];
+	}
 	
+	var msgID = '';
+	if (this.data.MsgID) {
+		msgID = this.data.MsgID[0];
+	}
+
+	var totalCount = '';
+	if (this.data.TotalCount) {
+		totalCount = this.data.TotalCount[0];
+	}
+
+	var filterCount = '';
+	if (this.data.FilterCount) {
+		filterCount = this.data.FilterCount[0];
+	}
+
+	var sendCount = '';
+	if (this.data.SentCount) {
+		sendCount = this.data.SentCount[0];
+	}
+
+	var errorCount = '';
+	if (this.data.ErrorCount) {
+		errorCount = this.data.ErrorCount[0];
+	}
+
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
 		"fromUserName" : this.data.FromUserName[0],
 		"createTime" : this.data.CreateTime[0],
 		"msgType" : this.data.MsgType[0],
 		"event" : this.data.Event[0],
+		"status": status,
+		"msgID": msgID,
+		"totalCount": totalCount,
+		"filterCount": filterCount,
+		"sendCount": sendCount,
+		"errorCount": errorCount,
 		"eventKey" : eventKey
 	}
 	
