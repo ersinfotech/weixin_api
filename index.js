@@ -267,7 +267,7 @@ Weixin.prototype.sendTextMsg = function(msg) {
 	"</xml>";
 	
 	if(msg.content.length == 0){
-		this.res.send(200);
+		this.res.send("success");
 	}
 	else{
 		this.res.type('xml'); 
