@@ -266,8 +266,13 @@ Weixin.prototype.sendTextMsg = function(msg) {
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
 	
-	this.res.type('xml'); 
-	this.res.send(output);
+	if(msg.content.length == 0){
+		this.res.send(200);
+	}
+	else{
+		this.res.type('xml'); 
+		this.res.send(output);
+	}
 	
 	return this;
 }
