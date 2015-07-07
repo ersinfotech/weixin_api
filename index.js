@@ -201,8 +201,6 @@ Weixin.prototype.parseEventMsg = function() {
 	console.log(this.data.ChosenBeacon[0].Distance);
 
 	console.log(this.data.AroundBeacons[0].AroundBeacons);
-	console.log(this.data.AroundBeacons[0].AroundBeacons.Minor);
-	console.log(this.data.AroundBeacons[0].AroundBeacons.Distance);
 
 	var eventKey = '';
 	if (this.data.EventKey) {
