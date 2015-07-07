@@ -194,22 +194,6 @@ Weixin.prototype.parseLinkMsg = function() {
  * EventKey 事件KEY值，与自定义菜单接口中KEY值对应
  */
 Weixin.prototype.parseEventMsg = function() {
-	console.log(this.data);
-	console.log(this.data.ChosenBeacon[0].Uuid);
-	console.log(this.data.ChosenBeacon[0].Major);
-	console.log(this.data.ChosenBeacon[0].Minor);
-	console.log(this.data.ChosenBeacon[0].Distance);
-
-	console.log(this.data.AroundBeacons[0].AroundBeacon);
-	if(this.data.AroundBeacons[0].AroundBeacon.Major)
-	{
-		console.log(this.data.AroundBeacons[0].AroundBeacon.Major);
-	}
-	if(this.data.AroundBeacons[0].AroundBeacon.Distance)
-	{
-		console.log(this.data.AroundBeacons[0].AroundBeacon.Distance);
-	}
-
 	var eventKey = '';
 	if (this.data.EventKey) {
 		eventKey = this.data.EventKey[0];
@@ -246,25 +230,25 @@ Weixin.prototype.parseEventMsg = function() {
 	}
 
 	// 摇一摇
-	var UUID = '';
-	if (this.data.UUID) {
-		UUID = this.data.UUID[0];
-	}
+	// var chosenUuid = '';
+	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Uuid) {
+	// 	chosenUuid = this.data.ChosenBeacon[0].Uuid[0];
+	// }
 
-	var major = '';
-	if (this.data.major) {
-		major = this.data.major[0];
-	}
+	// var chosenMajor = '';
+	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Major) {
+	// 	chosenMajor = this.data.ChosenBeacon[0].Major[0];
+	// }
 
-	var minor = '';
-	if (this.data.minor) {
-		minor = this.data.minor[0];
-	}
+	// var chosenMinor = '';
+	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Minor) {
+	// 	chosenMinor = this.data.ChosenBeacon[0].Minor[0];
+	// }
 
-	var Distance = '';
-	if (this.data.Distance) {
-		Distance = this.data.Distance[0];
-	}
+	// var chosenDistance = '';
+	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Distance) {
+	// 	chosenDistance = this.data.ChosenBeacon[0].Distance[0];
+	// }
 
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
@@ -278,11 +262,11 @@ Weixin.prototype.parseEventMsg = function() {
 		"filterCount": filterCount,
 		"sendCount": sendCount,
 		"errorCount": errorCount,
-		"eventKey" : eventKey,
-		"UUID": UUID,
-		"major": major,
-		"minor": minor,
-		"Distance": Distance
+		"eventKey" : eventKey
+		// "uuid": chosenUuid,
+		// "major": chosenMajor,
+		// "minor": chosenMinor,
+		// "Distance": chosenDistance
 	}
 	
 	emitter.emit("weixinEventMsg", msg);
