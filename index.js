@@ -236,7 +236,7 @@ Weixin.prototype.parseEventMsg = function() {
 
 	// 摇一摇
 	var UUID = '';
-	if (this.data..UUID) {
+	if (this.data.UUID) {
 		UUID = this.data.UUID[0];
 	}
 
