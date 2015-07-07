@@ -195,6 +195,10 @@ Weixin.prototype.parseLinkMsg = function() {
  */
 Weixin.prototype.parseEventMsg = function() {
 	console.log(this.data);
+	console.log(this.data.ChosenBeacon[0].Uuid);
+	console.log(this.data.ChosenBeacon[0].Major);
+	console.log(this.data.ChosenBeacon[0].Minor);
+	console.log(this.data.ChosenBeacon[0].Distance);
 	var eventKey = '';
 	if (this.data.EventKey) {
 		eventKey = this.data.EventKey[0];
@@ -232,7 +236,7 @@ Weixin.prototype.parseEventMsg = function() {
 
 	// 摇一摇
 	var UUID = '';
-	if (this.data.UUID) {
+	if (this.data..UUID) {
 		UUID = this.data.UUID[0];
 	}
 
