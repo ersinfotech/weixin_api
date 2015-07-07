@@ -229,6 +229,27 @@ Weixin.prototype.parseEventMsg = function() {
 		errorCount = this.data.ErrorCount[0];
 	}
 
+	// 摇一摇
+	var UUID = '';
+	if (this.data.UUID) {
+		UUID = this.data.UUID[0];
+	}
+
+	var major = '';
+	if (this.data.major) {
+		major = this.data.major[0];
+	}
+
+	var minor = '';
+	if (this.data.minor) {
+		minor = this.data.minor[0];
+	}
+
+	var Distance = '';
+	if (this.data.Distance) {
+		Distance = this.data.Distance[0];
+	}
+
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
 		"fromUserName" : this.data.FromUserName[0],
