@@ -262,7 +262,11 @@ Weixin.prototype.parseEventMsg = function() {
 		"filterCount": filterCount,
 		"sendCount": sendCount,
 		"errorCount": errorCount,
-		"eventKey" : eventKey
+		"eventKey" : eventKey,
+		"UUID": UUID,
+		"major": major,
+		"minor": minor,
+		"Distance": Distance
 	}
 	
 	emitter.emit("weixinEventMsg", msg);
