@@ -200,7 +200,15 @@ Weixin.prototype.parseEventMsg = function() {
 	console.log(this.data.ChosenBeacon[0].Minor);
 	console.log(this.data.ChosenBeacon[0].Distance);
 
-	console.log(this.data.AroundBeacons[0].AroundBeacons);
+	console.log(this.data.AroundBeacons[0].AroundBeacon);
+	if(this.data.AroundBeacons[0].AroundBeacon.Major)
+	{
+		console.log(this.data.AroundBeacons[0].AroundBeacon.Major);
+	}
+	if(this.data.AroundBeacons[0].AroundBeacon.Distance)
+	{
+		console.log(this.data.AroundBeacons[0].AroundBeacon.Distance);
+	}
 
 	var eventKey = '';
 	if (this.data.EventKey) {
