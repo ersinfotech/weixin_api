@@ -427,7 +427,7 @@ Weixin.prototype.loop = function(req, res) {
     req.on('data', function(chunk) { 
 		buf += chunk;
 	});
-	
+	console.log(buf);
 	// 内容接收完毕
     req.on('end', function() {
 		xml2js.parseString(buf, function(err, json) {
