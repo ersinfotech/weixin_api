@@ -367,7 +367,10 @@ Weixin.prototype.sendNewsMsg = function(msg) {
 // ------------ 主逻辑 -----------------
 // 解析
 Weixin.prototype.parse = function() {
-	
+
+	console.log("parse");
+	console.log(this.data);
+
 	this.msgType = this.data.MsgType[0] ? this.data.MsgType[0] : "text";
 		
 	switch(this.msgType) {
