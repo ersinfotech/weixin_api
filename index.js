@@ -367,10 +367,7 @@ Weixin.prototype.sendNewsMsg = function(msg) {
 // ------------ 主逻辑 -----------------
 // 解析
 Weixin.prototype.parse = function() {
-
-	console.log("parse");
-	console.log(this.data);
-
+	
 	this.msgType = this.data.MsgType[0] ? this.data.MsgType[0] : "text";
 		
 	switch(this.msgType) {
@@ -430,7 +427,6 @@ Weixin.prototype.loop = function(req, res) {
 	
 	// 内容接收完毕
     req.on('end', function() {
-    	console.log(buf);
 		xml2js.parseString(buf, function(err, json) {
 			if (err) {
                 err.status = 400;
