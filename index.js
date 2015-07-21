@@ -230,6 +230,32 @@ Weixin.prototype.parseEventMsg = function() {
 		errorCount = this.data.ErrorCount[0];
 	}
 
+	//wifi
+	var connectTime = '';
+	if (this.data.ConnectTime) {
+		connectTime = this.data.ConnectTime[0];
+	}
+
+	var expireTime = '';
+	if (this.data.ExpireTime) {
+		expireTime = this.data.ExpireTime[0];
+	}
+
+	var vendorId = '';
+	if (this.data.VendorId) {
+		vendorId = this.data.VendorId[0];
+	}
+
+	var placeId = '';
+	if (this.data.PlaceId) {
+		placeId = this.data.PlaceId[0];
+	}
+
+	var deviceNo = '';
+	if (this.data.DeviceNo) {
+		deviceNo = this.data.DeviceNo[0];
+	}
+
 	// 摇一摇
 	// var chosenUuid = '';
 	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Uuid) {
@@ -263,11 +289,16 @@ Weixin.prototype.parseEventMsg = function() {
 		"filterCount": filterCount,
 		"sendCount": sendCount,
 		"errorCount": errorCount,
-		"eventKey" : eventKey
+		"eventKey" : eventKey,
 		// "uuid": chosenUuid,
 		// "major": chosenMajor,
 		// "minor": chosenMinor,
 		// "Distance": chosenDistance
+		"connectTime": connectTime,
+		"expireTime": expireTime,
+		"vendorId": vendorId,
+		"placeId": placeId,
+		"deviceNo": deviceNo
 	}
 	
 	emitter.emit("weixinEventMsg", msg);
