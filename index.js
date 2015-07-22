@@ -257,25 +257,25 @@ Weixin.prototype.parseEventMsg = function() {
 	}
 
 	// 摇一摇
-	// var chosenUuid = '';
-	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Uuid) {
-	// 	chosenUuid = this.data.ChosenBeacon[0].Uuid[0];
-	// }
+	var chosenUuid = '';
+	if (this.data.ChosenBeacon && this.data.ChosenBeacon.length > 0 && this.data.ChosenBeacon[0].Uuid) {
+		chosenUuid = this.data.ChosenBeacon[0].Uuid[0];
+	}
 
-	// var chosenMajor = '';
-	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Major) {
-	// 	chosenMajor = this.data.ChosenBeacon[0].Major[0];
-	// }
+	var chosenMajor = '';
+	if (this.data.ChosenBeacon && this.data.ChosenBeacon.length > 0 && this.data.ChosenBeacon[0].Major) {
+		chosenMajor = this.data.ChosenBeacon[0].Major[0];
+	}
 
-	// var chosenMinor = '';
-	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Minor) {
-	// 	chosenMinor = this.data.ChosenBeacon[0].Minor[0];
-	// }
+	var chosenMinor = '';
+	if (this.data.ChosenBeacon && this.data.ChosenBeacon.length > 0 && this.data.ChosenBeacon[0].Minor) {
+		chosenMinor = this.data.ChosenBeacon[0].Minor[0];
+	}
 
-	// var chosenDistance = '';
-	// if (this.data.ChosenBeacon && this.data.ChosenBeacon[0].Distance) {
-	// 	chosenDistance = this.data.ChosenBeacon[0].Distance[0];
-	// }
+	var chosenDistance = '';
+	if (this.data.ChosenBeacon && this.data.ChosenBeacon.length > 0 && this.data.ChosenBeacon[0].Distance) {
+		chosenDistance = this.data.ChosenBeacon[0].Distance[0];
+	}
 
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
@@ -290,10 +290,10 @@ Weixin.prototype.parseEventMsg = function() {
 		"sendCount": sendCount,
 		"errorCount": errorCount,
 		"eventKey" : eventKey,
-		// "uuid": chosenUuid,
-		// "major": chosenMajor,
-		// "minor": chosenMinor,
-		// "Distance": chosenDistance
+		"uuid": chosenUuid,
+		"major": chosenMajor,
+		"minor": chosenMinor,
+		"distance": chosenDistance
 		"connectTime": connectTime,
 		"expireTime": expireTime,
 		"vendorId": vendorId,
