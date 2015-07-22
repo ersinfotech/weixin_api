@@ -293,7 +293,7 @@ Weixin.prototype.parseEventMsg = function() {
 		"uuid": chosenUuid,
 		"major": chosenMajor,
 		"minor": chosenMinor,
-		"distance": chosenDistance
+		"distance": chosenDistance,
 		"connectTime": connectTime,
 		"expireTime": expireTime,
 		"vendorId": vendorId,
