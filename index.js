@@ -277,6 +277,22 @@ Weixin.prototype.parseEventMsg = function() {
 		chosenDistance = this.data.ChosenBeacon[0].Distance[0];
 	}
 
+	// 门店审核反馈
+	var uniqId = '';// 商户自己内部ID，即字段中的sid
+	if (this.data.UniqId) {
+		uniqId = this.data.UniqId[0];
+	}
+
+	var poiId = '';// 商户自己内部ID，即字段中的sid
+	if (this.data.PoiId) {
+		poiId = this.data.PoiId[0];
+	}
+
+	var poiResult = '';// 商户自己内部ID，即字段中的sid
+	if (this.data.Result) {
+		poiResult = this.data.Result[0];
+	}
+
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
 		"fromUserName" : this.data.FromUserName[0],
@@ -298,7 +314,10 @@ Weixin.prototype.parseEventMsg = function() {
 		"expireTime": expireTime,
 		"vendorId": vendorId,
 		"placeId": placeId,
-		"deviceNo": deviceNo
+		"deviceNo": deviceNo,
+		"uniqId": uniqId,
+		"poiId": poiId,
+		"poiResult": poiResult
 	}
 	
 	emitter.emit("weixinEventMsg", msg);
