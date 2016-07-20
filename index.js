@@ -353,6 +353,31 @@ Weixin.prototype.sendTextMsg = function(msg) {
 	return this;
 }
 
+
+// 返回图片信息
+Weixin.prototype.sendImageMsg = function(msg) {
+	var time = Math.round(new Date().getTime() / 1000);
+	
+	var funcFlag = msg.funcFlag ? msg.funcFlag : this.funcFlag;
+	
+	var output = "" + 
+	"<xml>" + 
+		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" + 
+		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" + 
+		 "<CreateTime>" + time + "</CreateTime>" + 
+		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" + 
+		 "<Image>" + 
+		 "<MediaId><![CDATA[" + msg.mediaId + "]]></MediaId>" + 
+		 "</Image>" +
+		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
+	"</xml>";
+	
+	this.res.type('xml'); 
+	this.res.send(output);
+	
+	return this;
+}
+
 // 返回音乐信息
 Weixin.prototype.sendMusicMsg = function(msg) {
 	var time = Math.round(new Date().getTime() / 1000);
@@ -450,11 +475,12 @@ Weixin.prototype.sendMsg = function(msg) {
 		case 'text' : 
 			this.sendTextMsg(msg);
 			break;
-			
+		case 'image' : 
+			this.sendImageMsg(msg);
+			break;
 		case 'music' : 
 			this.sendMusicMsg(msg);
 			break;
-			
 		case 'news' : 
 			this.sendNewsMsg(msg);
 			break;
