@@ -53,6 +53,22 @@ Weixin.prototype.imageMsg = function(callback) {
 	return this;
 }
 
+// 监听语音消息
+Weixin.prototype.voiceMsg = function(callback) {
+	
+	emitter.on("weixinVoiceMsg", callback);
+	
+	return this;
+}
+
+// 监听小视频消息
+Weixin.prototype.shortVideoMsg = function(callback) {
+	
+	emitter.on("weixinShortVideoMsg", callback);
+	
+	return this;
+}
+
 // 监听地理位置消息
 Weixin.prototype.locationMsg = function(callback) {
 	
@@ -122,6 +138,56 @@ Weixin.prototype.parseImageMsg = function() {
 	}
 	
 	emitter.emit("weixinImageMsg", msg);
+	
+	return this;
+}
+
+/*
+ * 语音消息格式：
+ * ToUserName	开发者微信号
+ * FromUserName	 发送方帐号（一个OpenID）
+ * CreateTime	 消息创建时间 （整型）
+ * MsgType	 voice
+ * MediaId	 media_id
+ * MsgId	 消息id，64位整型
+ */
+Weixin.prototype.parseImageMsg = function() {
+	var msg = {
+		"toUserName" : this.data.ToUserName[0],
+		"fromUserName" : this.data.FromUserName[0],
+		"createTime" : this.data.CreateTime[0],
+		"msgType" : this.data.MsgType[0],
+		"media_id" : this.data.MediaId[0],
+		"msgId" : this.data.MsgId[0],
+	}
+	
+	emitter.emit("weixinVoiceMsg", msg);
+	
+	return this;
+}
+
+/*
+ * 小视频消息格式：
+ * ToUserName	开发者微信号
+ * FromUserName	 发送方帐号（一个OpenID）
+ * CreateTime	 消息创建时间 （整型）
+ * MsgType	 shortvideo
+ * MediaId	 media_id
+ * ThumbMediaId	 thumb_media_id
+ * MsgId	 消息id，64位整型
+ */
+Weixin.prototype.parseImageMsg = function() {
+	var msg = {
+		"toUserName" : this.data.ToUserName[0],
+		"fromUserName" : this.data.FromUserName[0],
+		"createTime" : this.data.CreateTime[0],
+		"msgType" : this.data.MsgType[0],
+		"media_id" : this.data.MediaId[0],
+		"thumb_media_id" : this.data.ThumbMediaId[0],
+		"msgId" : this.data.MsgId[0],
+	}
+	
+	emitter.emit("weixinShortVideoMsg", msg);
 	
 	return this;
 }
