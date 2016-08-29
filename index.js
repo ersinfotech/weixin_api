@@ -151,7 +151,7 @@ Weixin.prototype.parseImageMsg = function() {
  * MediaId	 media_id
  * MsgId	 消息id，64位整型
  */
-Weixin.prototype.parseImageMsg = function() {
+Weixin.prototype.parseVoiceMsg = function() {
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
 		"fromUserName" : this.data.FromUserName[0],
@@ -176,7 +176,7 @@ Weixin.prototype.parseImageMsg = function() {
  * ThumbMediaId	 thumb_media_id
  * MsgId	 消息id，64位整型
  */
-Weixin.prototype.parseImageMsg = function() {
+Weixin.prototype.parseShortVideoMsg = function() {
 	var msg = {
 		"toUserName" : this.data.ToUserName[0],
 		"fromUserName" : this.data.FromUserName[0],
@@ -518,6 +518,14 @@ Weixin.prototype.parse = function() {
 			
 		case 'image' : 
 			this.parseImageMsg();
+			break;
+
+		case 'voice' : 
+			this.parseVoiceMsg();
+			break;
+			
+		case 'shortvideo' : 
+			this.parseShortVideoMsg();
 			break;
 			
 		case 'location' : 
