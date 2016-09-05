@@ -370,7 +370,7 @@ Weixin.prototype.parseEventMsg = function() {
 		"createTime" : this.data.CreateTime[0],
 		"msgType" : this.data.MsgType[0],
 		"event" : this.data.Event[0],
-		"menuId": this.data.MenuId[0],
+		"menuId": menuId,
 		"status": status,
 		"msgID": msgID,
 		"totalCount": totalCount,
