@@ -266,6 +266,11 @@ Weixin.prototype.parseEventMsg = function() {
 		eventKey = this.data.EventKey[0];
 	}
 
+	var menuId = '';
+	if (this.data.MenuId) {
+		menuId = this.data.MenuId[0];
+	}
+
 	var status = '';
 	if (this.data.Status) {
 		status = this.data.Status[0];
@@ -365,6 +370,7 @@ Weixin.prototype.parseEventMsg = function() {
 		"createTime" : this.data.CreateTime[0],
 		"msgType" : this.data.MsgType[0],
 		"event" : this.data.Event[0],
+		"menuId": this.data.MenuId[0],
 		"status": status,
 		"msgID": msgID,
 		"totalCount": totalCount,
