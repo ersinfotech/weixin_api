@@ -1,15 +1,18 @@
 var sha1 = require('sha1'),
 	events = require('events'),
 	emitter = new events.EventEmitter(),
+	nodeWeixinCrypto = require('node-weixin-crypto'),
+	_ = require('underscore')
 	xml2js = require('xml2js');
-	
+
 // 微信类
-var Weixin = function() {
+var Weixin = function(config) {
 	this.data = '';
 	this.msgType = 'text';
 	this.fromUserName = '';
 	this.toUserName = '';
 	this.funcFlag = 0;
+	this.config = config;
 }
 
 // 验证
@@ -341,6 +344,18 @@ Weixin.prototype.sendTextMsg = function(msg) {
 		 "<Content><![CDATA[" + msg.content + "]]></Content>" + 
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
+
+	var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+	if(!wechatInfo){
+		return this;
+	}
+	var msgData = {
+	  id: wechatInfo.appid,
+	  encodingAESKey: wechatInfo.encodingAESKey,
+	  token: wechatInfo.token
+	}
+
+	output = nodeWeixinCrypto.encrypt(output, msgData);
 	
 	if(msg.content.length == 0){
 		this.res.send("success");
@@ -373,6 +388,18 @@ Weixin.prototype.sendMusicMsg = function(msg) {
 	 	 "</Music>" + 
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
+
+	var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+	if(!wechatInfo){
+		return this;
+	}
+	var msgData = {
+	  id: wechatInfo.appid,
+	  encodingAESKey: wechatInfo.encodingAESKey,
+	  token: wechatInfo.token
+	}
+
+	output = nodeWeixinCrypto.encrypt(output, msgData);
 	
 	this.res.type('xml'); 
 	this.res.send(output);
@@ -407,6 +434,18 @@ Weixin.prototype.sendNewsMsg = function(msg) {
 	 	 "<Articles>" + articlesStr + "</Articles>" +
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
+
+	var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+	if(!wechatInfo){
+		return this;
+	}
+	var msgData = {
+	  id: wechatInfo.appid,
+	  encodingAESKey: wechatInfo.encodingAESKey,
+	  token: wechatInfo.token
+	}
+
+	output = nodeWeixinCrypto.encrypt(output, msgData);
 	
 	this.res.type('xml'); 
 	this.res.send(output);
@@ -417,7 +456,33 @@ Weixin.prototype.sendNewsMsg = function(msg) {
 // ------------ 主逻辑 -----------------
 // 解析
 Weixin.prototype.parse = function() {
-	
+
+	if(this.data.Encrypt){
+		var toUserName = this.data.ToUserName
+		if(!this.data.MsgType[0]){
+			return this;
+		}
+		var wechatInfo = _.findWhere(this.config, {origin_id: this.data.ToUserName[0]})
+		if(!wechatInfo){
+			return this;
+		}
+		var msgData = {
+		  id: wechatInfo.appid,
+		  encodingAESKey: wechatInfo.encodingAESKey,
+		  token: wechatInfo.token
+		}
+		var decrypted = nodeWeixinCrypto.decrypt(this.data.Encrypt[0], msgData);
+		xml2js.parseString(decrypted, function(err, json) {
+			if (err) {
+          err.status = 400;
+        } else {
+        	decrypted = json.xml;
+        }
+	    });
+		this.data = decrypted
+		this.data.ToUserName = toUserName
+	}
+
 	this.msgType = this.data.MsgType[0] ? this.data.MsgType[0] : "text";
 		
 	switch(this.msgType) {
@@ -491,4 +556,4 @@ Weixin.prototype.loop = function(req, res) {
     });
 }
 
-module.exports = new Weixin();
+module.exports = Weixin;
