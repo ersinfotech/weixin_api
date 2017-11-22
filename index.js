@@ -417,17 +417,19 @@ Weixin.prototype.sendTextMsg = function(msg) {
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
 
-	var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-	if(!wechatInfo){
-		return this;
-	}
-	var msgData = {
-	  id: wechatInfo.appid,
-	  encodingAESKey: wechatInfo.encodingAESKey,
-	  token: wechatInfo.token
-	}
+	if(msg.origin_id){
+		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+		if(!wechatInfo){
+			return this;
+		}
+		var msgData = {
+		  id: wechatInfo.appid,
+		  encodingAESKey: wechatInfo.encodingAESKey,
+		  token: wechatInfo.token
+		}
 
-	output = nodeWeixinCrypto.encrypt(output, msgData);
+		output = nodeWeixinCrypto.encrypt(output, msgData);
+	}
 	
 	if(msg.content.length == 0){
 		this.res.send("success");
@@ -458,6 +460,20 @@ Weixin.prototype.sendImageMsg = function(msg) {
 		 "</Image>" +
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
+
+	if(msg.origin_id){
+		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+		if(!wechatInfo){
+			return this;
+		}
+		var msgData = {
+		  id: wechatInfo.appid,
+		  encodingAESKey: wechatInfo.encodingAESKey,
+		  token: wechatInfo.token
+		}
+
+		output = nodeWeixinCrypto.encrypt(output, msgData);
+	}
 	
 	this.res.type('xml'); 
 	this.res.send(output);
@@ -486,17 +502,19 @@ Weixin.prototype.sendMusicMsg = function(msg) {
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
 
-	var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-	if(!wechatInfo){
-		return this;
-	}
-	var msgData = {
-	  id: wechatInfo.appid,
-	  encodingAESKey: wechatInfo.encodingAESKey,
-	  token: wechatInfo.token
-	}
+	if(msg.origin_id){
+		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+		if(!wechatInfo){
+			return this;
+		}
+		var msgData = {
+		  id: wechatInfo.appid,
+		  encodingAESKey: wechatInfo.encodingAESKey,
+		  token: wechatInfo.token
+		}
 
-	output = nodeWeixinCrypto.encrypt(output, msgData);
+		output = nodeWeixinCrypto.encrypt(output, msgData);
+	}
 	
 	this.res.type('xml'); 
 	this.res.send(output);
@@ -531,18 +549,19 @@ Weixin.prototype.sendNewsMsg = function(msg) {
 	 	 "<Articles>" + articlesStr + "</Articles>" +
 		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
 	"</xml>";
+	if(msg.origin_id){
+		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
+		if(!wechatInfo){
+			return this;
+		}
+		var msgData = {
+		  id: wechatInfo.appid,
+		  encodingAESKey: wechatInfo.encodingAESKey,
+		  token: wechatInfo.token
+		}
 
-	var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-	if(!wechatInfo){
-		return this;
+		output = nodeWeixinCrypto.encrypt(output, msgData);
 	}
-	var msgData = {
-	  id: wechatInfo.appid,
-	  encodingAESKey: wechatInfo.encodingAESKey,
-	  token: wechatInfo.token
-	}
-
-	output = nodeWeixinCrypto.encrypt(output, msgData);
 	
 	this.res.type('xml'); 
 	this.res.send(output);
