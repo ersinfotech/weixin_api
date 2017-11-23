@@ -16,21 +16,21 @@ var Weixin = function(config) {
 }
 
 // 验证
-Weixin.prototype.checkSignature = function(req) {    		
-	
+Weixin.prototype.checkSignature = function(req) {
+
 	// 获取校验参数
 	this.signature = req.query.signature,
 	this.timestamp = req.query.timestamp,
 	this.nonce = req.query.nonce,
 	this.echostr = req.query.echostr;
-	
+
 	// 按照字典排序
 	var array = [this.token, this.timestamp, this.nonce];
 	array.sort();
-	
+
 	// 连接
 	var str = sha1(array.join(""));
-	
+
 	// 对比签名
 	if(str == this.signature) {
 		return true;
@@ -42,57 +42,57 @@ Weixin.prototype.checkSignature = function(req) {
 // ------------------ 监听 ------------------------
 // 监听文本消息
 Weixin.prototype.textMsg = function(callback) {
-	
+
 	emitter.on("weixinTextMsg", callback);
-	
+
 	return this;
 }
 
 // 监听图片消息
 Weixin.prototype.imageMsg = function(callback) {
-	
+
 	emitter.on("weixinImageMsg", callback);
-	
+
 	return this;
 }
 
 // 监听语音消息
 Weixin.prototype.voiceMsg = function(callback) {
-	
+
 	emitter.on("weixinVoiceMsg", callback);
-	
+
 	return this;
 }
 
 // 监听小视频消息
 Weixin.prototype.shortVideoMsg = function(callback) {
-	
+
 	emitter.on("weixinShortVideoMsg", callback);
-	
+
 	return this;
 }
 
 // 监听地理位置消息
 Weixin.prototype.locationMsg = function(callback) {
-	
+
 	emitter.on("weixinLocationMsg", callback);
-	
+
 	return this;
 }
 
 // 监听链接消息
 Weixin.prototype.urlMsg = function(callback) {
-	
+
 	emitter.on("weixinUrlMsg", callback);
-	
+
 	return this;
 }
 
 // 监听事件
 Weixin.prototype.eventMsg = function(callback) {
-	
+
 	emitter.on("weixinEventMsg", callback);
-	
+
 	return this;
 }
 
@@ -115,9 +115,9 @@ Weixin.prototype.parseTextMsg = function() {
 		"content" : this.data.Content[0],
 		"msgId" : this.data.MsgId[0],
 	}
-	
+
 	emitter.emit("weixinTextMsg", msg);
-	
+
 	return this;
 }
 
@@ -139,9 +139,9 @@ Weixin.prototype.parseImageMsg = function() {
 		"picUrl" : this.data.PicUrl[0],
 		"msgId" : this.data.MsgId[0],
 	}
-	
+
 	emitter.emit("weixinImageMsg", msg);
-	
+
 	return this;
 }
 
@@ -163,9 +163,9 @@ Weixin.prototype.parseVoiceMsg = function() {
 		"media_id" : this.data.MediaId[0],
 		"msgId" : this.data.MsgId[0],
 	}
-	
+
 	emitter.emit("weixinVoiceMsg", msg);
-	
+
 	return this;
 }
 
@@ -189,9 +189,9 @@ Weixin.prototype.parseShortVideoMsg = function() {
 		"thumb_media_id" : this.data.ThumbMediaId[0],
 		"msgId" : this.data.MsgId[0],
 	}
-	
+
 	emitter.emit("weixinShortVideoMsg", msg);
-	
+
 	return this;
 }
 
@@ -219,9 +219,9 @@ Weixin.prototype.parseLocationMsg = function(data) {
 		"label" : this.data.Label[0],
 		"msgId" : this.data.MsgId[0],
 	}
-	
+
 	emitter.emit("weixinLocationMsg", msg);
-	
+
 	return this;
 }
 
@@ -247,9 +247,9 @@ Weixin.prototype.parseLinkMsg = function() {
 		"url" : this.data.Url[0],
 		"msgId" : this.data.MsgId[0],
 	}
-	
+
 	emitter.emit("weixinUrlMsg", msg);
-	
+
 	return this;
 }
 
@@ -263,7 +263,7 @@ Weixin.prototype.parseLinkMsg = function() {
  * EventKey 事件KEY值，与自定义菜单接口中KEY值对应
  */
 Weixin.prototype.parseEventMsg = function() {
-	console.log(this.data);
+	// console.log(this.data);
 	var eventKey = '';
 	if (this.data.EventKey) {
 		eventKey = this.data.EventKey[0];
@@ -278,7 +278,7 @@ Weixin.prototype.parseEventMsg = function() {
 	if (this.data.Status) {
 		status = this.data.Status[0];
 	}
-	
+
 	var msgID = '';
 	if (this.data.MsgID) {
 		msgID = this.data.MsgID[0];
@@ -394,51 +394,68 @@ Weixin.prototype.parseEventMsg = function() {
 		"poiId": poiId,
 		"poiResult": poiResult
 	}
-	
+
 	emitter.emit("weixinEventMsg", msg);
-	
+
 	return this;
 }
 
 // --------------------- 消息返回 -------------------------
+
+function getSignature(token, timestamp, nonce, encrypt) {
+  var raw_signature = [token, timestamp, nonce, encrypt].sort().join('');
+  var crypto = require("crypto");
+  var sha1 = crypto.createHash("sha1");
+  sha1.update(raw_signature);
+  return sha1.digest("hex");
+}
+
 // 返回文字信息
 Weixin.prototype.sendTextMsg = function(msg) {
 	var time = Math.round(new Date().getTime() / 1000);
-	
+
 	var funcFlag = msg.funcFlag ? msg.funcFlag : this.funcFlag;
-	
-	var output = "" + 
-	"<xml>" + 
-		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" + 
-		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" + 
-		 "<CreateTime>" + time + "</CreateTime>" + 
-		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" + 
-		 "<Content><![CDATA[" + msg.content + "]]></Content>" + 
-		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
+
+	var output = "" +
+	"<xml>" +
+		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" +
+		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" +
+		 "<CreateTime>" + time + "</CreateTime>" +
+		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" +
+		 "<Content><![CDATA[" + msg.content + "]]></Content>" +
+		 "<FuncFlag>" + funcFlag + "</FuncFlag>" +
 	"</xml>";
 
-	if(msg.origin_id){
-		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-		if(!wechatInfo){
-			return this;
-		}
-		var msgData = {
-		  id: wechatInfo.appid,
-		  encodingAESKey: wechatInfo.encodingAESKey,
-		  token: wechatInfo.token
-		}
+	var wechatInfo = _.findWhere(this.config, {origin_id: msg.fromUserName})
+  if(wechatInfo) {
+    var msgData = {
+      id: wechatInfo.appid,
+      encodingAESKey: wechatInfo.encodingAESKey,
+      token: wechatInfo.token
+    }
+    output = nodeWeixinCrypto.encrypt(output, msgData);
+    Nonce = this.nonce || parseInt((Math.random() * 100000000000), 10);
+    TimeStamp = this.timestamp || new Date().getTime();
+    MsgSignature = getSignature(msgData.token, TimeStamp, Nonce, output);
+    output = "" +
+    "<xml>" +
+      "<Encrypt><![CDATA[" + output + "]]></Encrypt>" +
+      "<MsgSignature><![CDATA[" + MsgSignature + "]]></MsgSignature>" +
+      "<TimeStamp>" + TimeStamp + "</TimeStamp>" +
+      "<Nonce><![CDATA[" + Nonce + "]]></Nonce>" +
+    "</xml>"
+  }
 
-		output = nodeWeixinCrypto.encrypt(output, msgData);
-	}
-	
 	if(msg.content.length == 0){
+    // console.log('*2')
 		this.res.send("success");
 	}
 	else{
-		this.res.type('xml'); 
+    // console.log('*3')
+		this.res.type('xml');
 		this.res.send(output);
 	}
-	
+
 	return this;
 }
 
@@ -446,126 +463,147 @@ Weixin.prototype.sendTextMsg = function(msg) {
 // 返回图片信息
 Weixin.prototype.sendImageMsg = function(msg) {
 	var time = Math.round(new Date().getTime() / 1000);
-	
+
 	var funcFlag = msg.funcFlag ? msg.funcFlag : this.funcFlag;
-	
-	var output = "" + 
-	"<xml>" + 
-		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" + 
-		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" + 
-		 "<CreateTime>" + time + "</CreateTime>" + 
-		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" + 
-		 "<Image>" + 
-		 "<MediaId><![CDATA[" + msg.mediaId + "]]></MediaId>" + 
+
+	var output = "" +
+	"<xml>" +
+		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" +
+		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" +
+		 "<CreateTime>" + time + "</CreateTime>" +
+		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" +
+		 "<Image>" +
+		 "<MediaId><![CDATA[" + msg.mediaId + "]]></MediaId>" +
 		 "</Image>" +
-		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
+		 "<FuncFlag>" + funcFlag + "</FuncFlag>" +
 	"</xml>";
 
-	if(msg.origin_id){
-		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-		if(!wechatInfo){
-			return this;
-		}
-		var msgData = {
-		  id: wechatInfo.appid,
-		  encodingAESKey: wechatInfo.encodingAESKey,
-		  token: wechatInfo.token
-		}
 
-		output = nodeWeixinCrypto.encrypt(output, msgData);
-	}
-	
-	this.res.type('xml'); 
+  var wechatInfo = _.findWhere(this.config, {origin_id: msg.fromUserName})
+  if(wechatInfo) {
+    var msgData = {
+      id: wechatInfo.appid,
+      encodingAESKey: wechatInfo.encodingAESKey,
+      token: wechatInfo.token
+    }
+    output = nodeWeixinCrypto.encrypt(output, msgData);
+    Nonce = this.nonce || parseInt((Math.random() * 100000000000), 10);
+    TimeStamp = this.timestamp || new Date().getTime();
+    MsgSignature = getSignature(msgData.token, TimeStamp, Nonce, output);
+    output = "" +
+    "<xml>" +
+      "<Encrypt><![CDATA[" + output + "]]></Encrypt>" +
+      "<MsgSignature><![CDATA[" + MsgSignature + "]]></MsgSignature>" +
+      "<TimeStamp>" + TimeStamp + "</TimeStamp>" +
+      "<Nonce><![CDATA[" + Nonce + "]]></Nonce>" +
+    "</xml>"
+  }
+
+	this.res.type('xml');
 	this.res.send(output);
-	
+
 	return this;
 }
 
 // 返回音乐信息
 Weixin.prototype.sendMusicMsg = function(msg) {
 	var time = Math.round(new Date().getTime() / 1000);
-	
+
 	var funcFlag = msg.funcFlag ? msg.funcFlag : this.funcFlag;
-	
-	var output = "" + 
-	"<xml>" + 
-		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" + 
-		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" + 
-		 "<CreateTime>" + time + "</CreateTime>" + 
-		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" + 
-	 	 "<Music>" + 
-	 	 "<Title><![CDATA[" + msg.title + "]]></Title>" + 
-	 	 "<Description><![CDATA[" + msg.description + "DESCRIPTION]]></Description>" + 
-	 	 "<MusicUrl><![CDATA[" + msg.musicUrl + "]]></MusicUrl>" + 
-	 	 "<HQMusicUrl><![CDATA[" + msg.HQMusicUrl + "]]></HQMusicUrl>" + 
-	 	 "</Music>" + 
-		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
+
+	var output = "" +
+	"<xml>" +
+		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" +
+		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" +
+		 "<CreateTime>" + time + "</CreateTime>" +
+		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" +
+	 	 "<Music>" +
+	 	 "<Title><![CDATA[" + msg.title + "]]></Title>" +
+	 	 "<Description><![CDATA[" + msg.description + "DESCRIPTION]]></Description>" +
+	 	 "<MusicUrl><![CDATA[" + msg.musicUrl + "]]></MusicUrl>" +
+	 	 "<HQMusicUrl><![CDATA[" + msg.HQMusicUrl + "]]></HQMusicUrl>" +
+	 	 "</Music>" +
+		 "<FuncFlag>" + funcFlag + "</FuncFlag>" +
 	"</xml>";
 
-	if(msg.origin_id){
-		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-		if(!wechatInfo){
-			return this;
-		}
-		var msgData = {
-		  id: wechatInfo.appid,
-		  encodingAESKey: wechatInfo.encodingAESKey,
-		  token: wechatInfo.token
-		}
 
-		output = nodeWeixinCrypto.encrypt(output, msgData);
-	}
-	
-	this.res.type('xml'); 
+  var wechatInfo = _.findWhere(this.config, {origin_id: msg.fromUserName})
+  if(wechatInfo) {
+    var msgData = {
+      id: wechatInfo.appid,
+      encodingAESKey: wechatInfo.encodingAESKey,
+      token: wechatInfo.token
+    }
+    output = nodeWeixinCrypto.encrypt(output, msgData);
+    Nonce = this.nonce || parseInt((Math.random() * 100000000000), 10);
+    TimeStamp = this.timestamp || new Date().getTime();
+    MsgSignature = getSignature(msgData.token, TimeStamp, Nonce, output);
+    output = "" +
+    "<xml>" +
+      "<Encrypt><![CDATA[" + output + "]]></Encrypt>" +
+      "<MsgSignature><![CDATA[" + MsgSignature + "]]></MsgSignature>" +
+      "<TimeStamp>" + TimeStamp + "</TimeStamp>" +
+      "<Nonce><![CDATA[" + Nonce + "]]></Nonce>" +
+    "</xml>"
+  }
+
+	this.res.type('xml');
 	this.res.send(output);
-	
+
 	return this;
 }
 
 // 返回图文信息
 Weixin.prototype.sendNewsMsg = function(msg) {
 	var time = Math.round(new Date().getTime() / 1000);
-	
-	// 
-	var articlesStr = "";	
-	for (var i = 0; i < msg.articles.length; i++) 
+
+	//
+	var articlesStr = "";
+	for (var i = 0; i < msg.articles.length; i++)
 	{
-		articlesStr += "<item>" + 
-							"<Title><![CDATA[" + msg.articles[i].title + "]]></Title>" + 
-							"<Description><![CDATA[" + msg.articles[i].description + "]]></Description>" + 
-							"<PicUrl><![CDATA[" + msg.articles[i].picUrl + "]]></PicUrl>" + 
-							"<Url><![CDATA[" + msg.articles[i].url + "]]></Url>" + 
+		articlesStr += "<item>" +
+							"<Title><![CDATA[" + msg.articles[i].title + "]]></Title>" +
+							"<Description><![CDATA[" + msg.articles[i].description + "]]></Description>" +
+							"<PicUrl><![CDATA[" + msg.articles[i].picUrl + "]]></PicUrl>" +
+							"<Url><![CDATA[" + msg.articles[i].url + "]]></Url>" +
 						"</item>";
 	}
-	
+
 	var funcFlag = msg.funcFlag ? msg.funcFlag : this.funcFlag;
-	var output = "" + 
-	"<xml>" + 
-		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" + 
-		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" + 
-		 "<CreateTime>" + time + "</CreateTime>" + 
-		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" + 
+	var output = "" +
+	"<xml>" +
+		 "<ToUserName><![CDATA[" + msg.toUserName + "]]></ToUserName>" +
+		 "<FromUserName><![CDATA[" + msg.fromUserName + "]]></FromUserName>" +
+		 "<CreateTime>" + time + "</CreateTime>" +
+		 "<MsgType><![CDATA[" + msg.msgType + "]]></MsgType>" +
 		 "<ArticleCount>" + msg.articles.length + "</ArticleCount>" +
 	 	 "<Articles>" + articlesStr + "</Articles>" +
-		 "<FuncFlag>" + funcFlag + "</FuncFlag>" + 
+		 "<FuncFlag>" + funcFlag + "</FuncFlag>" +
 	"</xml>";
-	if(msg.origin_id){
-		var wechatInfo = _.findWhere(this.config, {origin_id: msg.origin_id})
-		if(!wechatInfo){
-			return this;
-		}
-		var msgData = {
-		  id: wechatInfo.appid,
-		  encodingAESKey: wechatInfo.encodingAESKey,
-		  token: wechatInfo.token
-		}
 
-		output = nodeWeixinCrypto.encrypt(output, msgData);
-	}
-	
-	this.res.type('xml'); 
+  var wechatInfo = _.findWhere(this.config, {origin_id: msg.fromUserName})
+  if(wechatInfo) {
+    var msgData = {
+      id: wechatInfo.appid,
+      encodingAESKey: wechatInfo.encodingAESKey,
+      token: wechatInfo.token
+    }
+    output = nodeWeixinCrypto.encrypt(output, msgData);
+    Nonce = this.nonce || parseInt((Math.random() * 100000000000), 10);
+    TimeStamp = this.timestamp || new Date().getTime();
+    MsgSignature = getSignature(msgData.token, TimeStamp, Nonce, output);
+    output = "" +
+    "<xml>" +
+      "<Encrypt><![CDATA[" + output + "]]></Encrypt>" +
+      "<MsgSignature><![CDATA[" + MsgSignature + "]]></MsgSignature>" +
+      "<TimeStamp>" + TimeStamp + "</TimeStamp>" +
+      "<Nonce><![CDATA[" + Nonce + "]]></Nonce>" +
+    "</xml>"
+  }
+
+	this.res.type('xml');
 	this.res.send(output);
-	
+
 	return this;
 }
 
@@ -575,9 +613,9 @@ Weixin.prototype.parse = function() {
 
 	if(this.data.Encrypt){
 		var toUserName = this.data.ToUserName
-		if(!this.data.MsgType[0]){
-			return this;
-		}
+		// if(!this.data.MsgType || !this.data.MsgType[0]){
+		// 	return this;
+		// }
 		var wechatInfo = _.findWhere(this.config, {origin_id: this.data.ToUserName[0]})
 		if(!wechatInfo){
 			return this;
@@ -600,33 +638,33 @@ Weixin.prototype.parse = function() {
 	}
 
 	this.msgType = this.data.MsgType[0] ? this.data.MsgType[0] : "text";
-		
+
 	switch(this.msgType) {
-		case 'text' : 
+		case 'text' :
 			this.parseTextMsg();
 			break;
-			
-		case 'image' : 
+
+		case 'image' :
 			this.parseImageMsg();
 			break;
 
-		case 'voice' : 
+		case 'voice' :
 			this.parseVoiceMsg();
 			break;
-			
-		case 'shortvideo' : 
+
+		case 'shortvideo' :
 			this.parseShortVideoMsg();
 			break;
-			
-		case 'location' : 
+
+		case 'location' :
 			this.parseLocationMsg();
 			break;
-			
-		case 'link' : 
+
+		case 'link' :
 			this.parseLinkMsg();
 			break;
-			
-		case 'event' : 
+
+		case 'event' :
 			this.parseEventMsg();
 			break;
 	}
@@ -635,36 +673,36 @@ Weixin.prototype.parse = function() {
 // 发送信息
 Weixin.prototype.sendMsg = function(msg) {
 	switch(msg.msgType) {
-		
-		case 'text' : 
+
+		case 'text' :
 			this.sendTextMsg(msg);
 			break;
-		case 'image' : 
+		case 'image' :
 			this.sendImageMsg(msg);
 			break;
-		case 'music' : 
+		case 'music' :
 			this.sendMusicMsg(msg);
 			break;
-		case 'news' : 
+		case 'news' :
 			this.sendNewsMsg(msg);
 			break;
 	}
 }
 
 // Loop
-Weixin.prototype.loop = function(req, res) {	
+Weixin.prototype.loop = function(req, res) {
 	// 保存res
 	this.res = res;
-	
+
 	var self = this;
-	
+
     // 获取XML内容
     var buf = '';
     req.setEncoding('utf8');
-    req.on('data', function(chunk) { 
+    req.on('data', function(chunk) {
 		buf += chunk;
 	});
-	
+
 	// 内容接收完毕
     req.on('end', function() {
 		xml2js.parseString(buf, function(err, json) {
@@ -674,9 +712,9 @@ Weixin.prototype.loop = function(req, res) {
                 req.body = json;
             }
         });
-		
+
 		self.data = req.body.xml;
-				
+
 		self.parse();
     });
 }
