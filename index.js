@@ -607,6 +607,33 @@ Weixin.prototype.sendNewsMsg = function(msg) {
 	return this;
 }
 
+// 返回XML信息
+Weixin.prototype.sendXMLMsg = function(msg) {
+  var output = msg.xml
+  var wechatInfo = _.findWhere(this.config, {origin_id: msg.fromUserName})
+  if(wechatInfo) {
+    var msgData = {
+      id: wechatInfo.appid,
+      encodingAESKey: wechatInfo.encodingAESKey,
+      token: wechatInfo.token
+    }
+    output = nodeWeixinCrypto.encrypt(output, msgData);
+    Nonce = this.nonce || parseInt((Math.random() * 100000000000), 10);
+    TimeStamp = this.timestamp || new Date().getTime();
+    MsgSignature = getSignature(msgData.token, TimeStamp, Nonce, output);
+    output = "" +
+    "<xml>" +
+      "<Encrypt><![CDATA[" + output + "]]></Encrypt>" +
+      "<MsgSignature><![CDATA[" + MsgSignature + "]]></MsgSignature>" +
+      "<TimeStamp>" + TimeStamp + "</TimeStamp>" +
+      "<Nonce><![CDATA[" + Nonce + "]]></Nonce>" +
+    "</xml>"
+  }
+  this.res.type('xml');
+  this.res.send(output);
+  return this;
+}
+
 // ------------ 主逻辑 -----------------
 // 解析
 Weixin.prototype.parse = function() {
@@ -686,6 +713,8 @@ Weixin.prototype.sendMsg = function(msg) {
 		case 'news' :
 			this.sendNewsMsg(msg);
 			break;
+    case 'xml':
+      this.sendXMLMsg(msg)
 	}
 }
 
