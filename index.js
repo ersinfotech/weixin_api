@@ -64,6 +64,14 @@ Weixin.prototype.voiceMsg = function(callback) {
 	return this;
 }
 
+// 监听视频消息
+Weixin.prototype.videoMsg = function(callback) {
+
+  emitter.on("weixinVideoMsg", callback);
+
+  return this;
+}
+
 // 监听小视频消息
 Weixin.prototype.shortVideoMsg = function(callback) {
 
@@ -167,6 +175,32 @@ Weixin.prototype.parseVoiceMsg = function() {
 	emitter.emit("weixinVoiceMsg", msg);
 
 	return this;
+}
+
+/*
+ * 视频消息格式：
+ * ToUserName 开发者微信号
+ * FromUserName  发送方帐号（一个OpenID）
+ * CreateTime  消息创建时间 （整型）
+ * MsgType   shortvideo
+ * MediaId   media_id
+ * ThumbMediaId  thumb_media_id
+ * MsgId   消息id，64位整型
+ */
+Weixin.prototype.parseVideoMsg = function() {
+  var msg = {
+    "toUserName" : this.data.ToUserName[0],
+    "fromUserName" : this.data.FromUserName[0],
+    "createTime" : this.data.CreateTime[0],
+    "msgType" : this.data.MsgType[0],
+    "media_id" : this.data.MediaId[0],
+    "thumb_media_id" : this.data.ThumbMediaId[0],
+    "msgId" : this.data.MsgId[0],
+  }
+
+  emitter.emit("weixinVideoMsg", msg);
+
+  return this;
 }
 
 /*
@@ -304,6 +338,26 @@ Weixin.prototype.parseEventMsg = function() {
 		errorCount = this.data.ErrorCount[0];
 	}
 
+  var copyrightCheckResult = {}
+  if (this.data.CopyrightCheckResult) {
+    copyrightCheckResult = {
+      count: this.data.CopyrightCheckResult[0].Count[0],
+      checkState: this.data.CopyrightCheckResult[0].CheckState[0],
+      resultList: _.map(this.data.CopyrightCheckResult[0].ResultList[0].item, function(val) {
+        return {
+          articleIdx: val.ArticleIdx[0],
+          userDeclareState: val.UserDeclareState[0],
+          auditState: val.AuditState[0],
+          originalArticleUrl: val.OriginalArticleUrl[0],
+          originalArticleType: val.OriginalArticleType[0],
+          canReprint: val.CanReprint[0],
+          needReplaceContent: val.NeedReplaceContent[0],
+          needShowReprintSource: val.NeedShowReprintSource[0]
+        }
+      })
+    }
+  }
+
 	//wifi
 	var connectTime = '';
 	if (this.data.ConnectTime) {
@@ -380,6 +434,7 @@ Weixin.prototype.parseEventMsg = function() {
 		"filterCount": filterCount,
 		"sendCount": sendCount,
 		"errorCount": errorCount,
+    "copyrightCheckResult": copyrightCheckResult,
 		"eventKey" : eventKey,
 		"uuid": chosenUuid,
 		"major": chosenMajor,
@@ -651,6 +706,10 @@ Weixin.prototype.parse = function() {
 		case 'voice' :
 			this.parseVoiceMsg();
 			break;
+
+    case 'video' :
+      this.parseVideoMsg();
+      break;
 
 		case 'shortvideo' :
 			this.parseShortVideoMsg();
