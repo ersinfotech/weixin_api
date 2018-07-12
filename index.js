@@ -338,6 +338,26 @@ Weixin.prototype.parseEventMsg = function() {
 		errorCount = this.data.ErrorCount[0];
 	}
 
+  var copyrightCheckResult = {}
+  if (this.data.CopyrightCheckResult) {
+    copyrightCheckResult = {
+      count: this.data.CopyrightCheckResult[0].Count[0],
+      checkState: this.data.CopyrightCheckResult[0].CheckState[0],
+      resultList: _.map(this.data.CopyrightCheckResult[0].ResultList[0].item, function(val) {
+        return {
+          articleIdx: val.ArticleIdx[0],
+          userDeclareState: val.UserDeclareState[0],
+          auditState: val.AuditState[0],
+          originalArticleUrl: val.OriginalArticleUrl[0],
+          originalArticleType: val.OriginalArticleType[0],
+          canReprint: val.CanReprint[0],
+          needReplaceContent: val.NeedReplaceContent[0],
+          needShowReprintSource: val.NeedShowReprintSource[0]
+        }
+      })
+    }
+  }
+
 	//wifi
 	var connectTime = '';
 	if (this.data.ConnectTime) {
@@ -414,6 +434,7 @@ Weixin.prototype.parseEventMsg = function() {
 		"filterCount": filterCount,
 		"sendCount": sendCount,
 		"errorCount": errorCount,
+    "copyrightCheckResult": copyrightCheckResult,
 		"eventKey" : eventKey,
 		"uuid": chosenUuid,
 		"major": chosenMajor,
